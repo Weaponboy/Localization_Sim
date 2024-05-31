@@ -14,7 +14,13 @@
         crossorigin="anonymous"></script>
 
     <style>
+        body {
+            background-color: rgb(114, 114, 114);
+            user-select: none;
+        }
+
         #backround {
+            border-color: rgb(71, 70, 70);
             width: 540px;
             height: 540px;
             margin-left: 50px;
@@ -30,8 +36,33 @@
 
         #displayPath {
             position: absolute;
-            top: 60%;
-            left: 82%;
+            top: 58%;
+            left: 86%;
+            border-radius: 4px;
+            background-color: rgb(161, 161, 161);
+        }
+
+        #openPathFromFile {
+            position: absolute;
+            top: 58%;
+            left: 61%;
+            border-radius: 4px;
+            z-index: 200;
+            background-color: rgb(161, 161, 161);
+        }
+
+        #downloadData {
+            position: absolute;
+            top: 58%;
+            left: 72.5%;
+            border-radius: 4px;
+            background-color: rgb(161, 161, 161);
+
+        }
+
+        #openPathFromFile :hover {
+            background-color: rgb(0, 17, 255);
+            z-index: 200;
         }
 
         .point {
@@ -39,6 +70,14 @@
             height: 2px;
             background-color: rgb(0, 255, 34);
             /* Make it round */
+            position: absolute;
+        }
+
+        .pointStatic {
+            width: 2px;
+            height: 2px;
+            z-index: 200;
+            background-color: rgb(204, 0, 255);
             position: absolute;
         }
 
@@ -54,13 +93,101 @@
             transition: opacity .2s;
         }
 
-        .robotPos {
+        #robotPos {
+            display: none;
             width: 8px;
             height: 8px;
             background-color: red;
             border-radius: 50%;
             position: absolute;
+            z-index: 100;
+        }
 
+        #robotBorder {
+            display: none;
+            width: 62px;
+            height: 62px;
+            background: none;
+            border-style: solid;
+            border-color: (255, 0, 0);
+            border-width: 3px;
+            position: absolute;
+            z-index: 100;
+        }
+
+        .yLabel {
+            font-size: 90%;
+            font-weight: 600;
+            margin-left: 3px;
+            margin-right: 2px;
+            padding: 0;
+            margin-top: 3px;
+        }
+
+        .xLabel {
+            font-size: 90%;
+            font-weight: 600;
+            padding: 0;
+            margin-left: 5px;
+            margin-right: 2px;
+            margin-top: 3px;
+        }
+
+        .pointBox {
+            display: inline-flex;
+            height: 25px;
+            width: 45%;
+            margin-left: 10px;
+        }
+
+        .pointChecks {
+            vertical-align: middle;
+            margin-top: 2px;
+        }
+
+        .checkLabel {
+            font-size: 110%;
+            font-weight: 600;
+            padding: 0;
+            margin: 0%;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+
+        .valueLabel {
+            width: 65px;
+            height: 20px;
+            border-radius: 2px;
+            vertical-align: middle;
+            margin-top: 4px;
+            font-size: 90%;
+            font-weight: 600;
+            background-color: rgb(161, 161, 161);
+        }
+
+        .pathHeadings {
+            font-size: 110%;
+            font-weight: 600;
+            font-family: Arial, Helvetica, sans-serif;
+            padding: 0;
+            margin: 0;
+            text-align: center;
+        }
+
+        .pathHeadingsBox {
+            text-align: center;
+            width: 100%;
+            accent-color: rgba(2, 52, 82, 0.822);
+
+        }
+
+        .pointBoxes {
+            width: 85%;
+            height: 150px;
+        }
+
+        .pointChecks {
+            accent-color: rgba(2, 52, 82, 0.822);
         }
     </style>
 
@@ -73,20 +200,23 @@
         <img ondrop="dropHandler(event);" ondragover="dragOverHandler(event);"
             src="images/custom-centerstage-field-diagrams-works-with-meepmeep-v0-uqcy8o9sfpob1.png" id="backround"
             alt="">
+        <div id="robotPos"></div>
+        <div id="robotBorder"></div>
     </div>
 
-    <input type="range" min="0" max="100" value="0" class="slider" id="mySlider">
+    <input type="range" min="0" max="0" value="0" class="slider" id="mySlider">
     <div id="sliderValue" style="position: absolute; top: 92%; left: 22%;">50</div>
     <div id="start" style="position: absolute; top: 89.2%; left: 6%;">0</div>
     <div id="end" style="position: absolute; top: 89.2%; left: 39%;">100</div>
 
-    <div style="height: 600px; width: 200px;">
-        <div id="globalPosition" style="margin-top: 44px;">
-            <h1 style="font-size: 120%;">Global Odometry Position</h1>
+    <div
+        style="position: absolute; top: 7.5%; left: 44.1%; height: 541px; width: 200px; background-color: rgb(83, 92, 94); border-style: solid; border-radius: 8px; color: black;">
+        <div id="globalPosition" style="margin-top: 5px; width: 90%; padding-left: 6%;">
+            <h1 style="font-size: 110%;">Global Odometry Position</h1>
             <div
-                style="font-size: 100%; font-weight: 500; border-style: solid; padding: 0; height: fit-content; width: 100%; display: inline-flex; margin-bottom: 0.2rem;  padding-left: 0.5rem;">
+                style="text-align: center; font-size: 100%; font-weight: 500; border-style: solid; padding: 0; height: fit-content; width: 100%; display: inline-flex; margin-bottom: 0.2rem;  padding-left: 0.5rem;">
                 X: <h2 id="XPosition"
-                    style=" margin: 0; font-size: 100%; font-weight: 500;  padding-left: 0.5rem; padding-top: 2px;">
+                    style=" text-align: center; margin: 0; font-size: 100%; font-weight: 500;  padding-left: 0.5rem; padding-top: 2px;">
                 </h2>
             </div>
             <div
@@ -103,8 +233,8 @@
             </div>
         </div>
 
-        <div id="globalPosition" style="margin-top: 19px;">
-            <h1 style="font-size: 100%;">Odometry Pod Readings</h1>
+        <div id="globalPosition" style="margin-top: 8px; width: 90%; padding-left: 6%;">
+            <h1 style="font-size: 110%;">Odometry Pod Readings</h1>
             <div
                 style="border-style: solid; font-weight: 500; font-size: 100%; padding: 0; height: fit-content; width: 100%; display: inline-flex; margin-bottom: 0.2rem;  padding-left: 0.5rem;">
                 Left Pod: <h2 id="LeftPod"
@@ -125,8 +255,8 @@
             </div>
         </div>
 
-        <div id="globalPosition" style="margin-top: 19px;">
-            <h1 style="font-size: 120%;">Global Robot Velocity</h1>
+        <div id="globalPosition" style="margin-top: 8px; width: 90%; padding-left: 6%;">
+            <h1 style="font-size: 110%;">Global Robot Velocity</h1>
             <div
                 style="border-style: solid; font-size: 100%; font-weight: 500; padding: 0; height: fit-content; width: 100%; display: inline-flex; margin-bottom: 0.2rem;  padding-left: 0.5rem;">
                 X Velocity: <h2 id="XVelo"
@@ -141,43 +271,174 @@
             </div>
             <div
                 style="border-style: solid; font-size: 100%; font-weight: 500; padding: 0; height: fit-content; width: 100%; display: inline-flex; margin-bottom: 0.2rem;  padding-left: 0.5rem;">
-                Heading Velocity: <h2 id="HeadingVelo"
+                H Velocity: <h2 id="HeadingVelo"
                     style=" margin: 0; font-size: 100%; font-weight: 500; padding-left: 0.5rem;  padding-top: 2px;">
                 </h2>
             </div>
         </div>
 
         <div
-            style="width: 100%; height: 40px; border-style: solid; margin-top: 20px; padding-top: 4px; padding-left: 4px; font-size: 100%; font-weight: 500; display: inline-flex;">
+            style="margin-left: 6%; margin-top: 8px; width: 83.8%; border-style: solid; font-size: 100%; font-weight: 500; padding: 0; height: fit-content; display: inline-flex; margin-bottom: 0.2rem;  padding-left: 4px;">
             loop time: <h2 id="loopTimeDis"
-                style="font-size: 100%; font-weight: 500; padding: 0; margin: 0; height: fit-content; padding-left: 5px; padding-top: 2px;">
+                style="font-size: 100%; font-weight: 500; padding: 0; margin: 0; height: fit-content; padding-left: 0px; padding-top: 2px;">
             </h2>
         </div>
 
     </div>
 
-    <button onclick="displayParsedData()" id="display">Clear Data</button>
-    <button onclick="createPoints()" id="displayPath">Build Path Data</button>
+    <div id="pointsStorage"
+        style="position: absolute; top: 7.5%; left: 59.5%; height: 57%; width: 37%; background-color: rgb(83, 92, 94); color: black; border-radius: 10px; border-style: solid;">
+
+        <h1
+            style="font-size: 160%; font-family: Arial, Helvetica, sans-serif; text-align: center; font-weight: 600; margin: 0; padding-top: 6px;">
+            Path Planning</h1>
+
+        <div style="width: 45%; height: 300px; position: absolute; top:9%; left: 3%;">
+            <div id="firstPath" class="pointBoxes">
+                <div class="pathHeadingsBox">
+                    <input type="checkbox" id="Path1">
+                    <label class="pathHeadings" for="Path1">Path 1</label>
+                </div>
+            </div>
+
+            <div id="secondPath" class="pointBoxes">
+                <div class="pathHeadingsBox">
+                    <input type="checkbox" id="Path2">
+                    <label class="pathHeadings" for="Path2">Path 2</label>
+                </div>
+            </div>
+        </div>
+
+        <div style="width: 45%; float: inline-end; height: 300px; position: absolute; top: 9%; left: 50%;">
+            <div id="thirdPath" class="pointBoxes">
+                <div class="pathHeadingsBox">
+                    <input type="checkbox" id="Path3" onclick="">
+                    <label class="pathHeadings" for="Path3">Path 3</label>
+                </div>
+            </div>
+
+            <div id="forthPath" class="pointBoxes">
+                <div class="pathHeadingsBox">
+                    <input type="checkbox" id="Path4">
+                    <label class="pathHeadings" for="Path4">Path 4</label>
+                </div>
+            </div>
+        </div>
 
 
-    <!-- <div
-        style="position: absolute; left: 200px; top: 100px; width: 5px; height: 5px; background-color: rgb(255, 255, 255);">
-    </div> -->
+    </div>
+
+    <button onclick="PlanPath()" id="displayPath">Build Path Data</button>
+    <button id="downloadData">Download Path Data</button>
+    <button id="openPathFromFile">Open Path Data</button>
+    <input type="file" id="fileinput" accept=".txt" style="display: none;">
+    <pre id="pathingContent" style="white-space: pre-wrap;"></pre>
 
     <script>
+
+        window.onload = function () {
+
+            //id, label, containerId
+            generateDivBox('1p1', 'P1', 'firstPath', true, true);
+            generateDivBox('1p2', 'P2', 'firstPath', true, true);
+            generateDivBox('1p3', 'P3', 'firstPath', false, false);
+            generateDivBox('1p4', 'P4', 'firstPath', false, false);
+
+            //id, label, containerId
+            generateDivBox('2p1', 'P1', 'secondPath', true, true);
+            generateDivBox('2p2', 'P2', 'secondPath', true, true);
+            generateDivBox('2p3', 'P3', 'secondPath', false, false);
+            generateDivBox('2p4', 'P4', 'secondPath', false, false);
+
+            //id, label, containerId
+            generateDivBox('3p1', 'P1', 'thirdPath', true, true);
+            generateDivBox('3p2', 'P2', 'thirdPath', true, true);
+            generateDivBox('3p3', 'P3', 'thirdPath', false, false);
+            generateDivBox('3p4', 'P4', 'thirdPath', false, false);
+
+            //id, label, containerId
+            generateDivBox('4p1', 'P1', 'forthPath', true, true);
+            generateDivBox('4p2', 'P2', 'forthPath', true, true);
+            generateDivBox('4p3', 'P3', 'forthPath', false, false);
+            generateDivBox('4p4', 'P4', 'forthPath', false, false);
+
+            pathsChecked('Path1', 'Path2', 'Path3', 'Path4');
+
+            thridPoint1('1p3tick', '1p4tick')
+            thridPoint1('2p3tick', '2p4tick')
+            thridPoint1('3p3tick', '3p4tick')
+            thridPoint1('4p3tick', '4p4tick')
+
+            const containerTest = document.getElementById('pointsStorage');
+
+            function handleInputChange(event) {
+                PlanPath();
+
+                var point32 = document.getElementById("1p3tick");
+                var point42 = document.getElementById("1p4tick");
+
+                startPoint(2, point32.checked, point42.checked)
+
+                var point33 = document.getElementById("2p3tick");
+                var point43 = document.getElementById("2p4tick");
+
+                startPoint(3, point33.checked, point43.checked)
+
+                var point34 = document.getElementById("3p3tick");
+                var point44 = document.getElementById("3p4tick");
+
+                startPoint(4, point34.checked, point44.checked)
+
+            }
+
+            function updatePointsInput(event) {
+                var point32 = document.getElementById("1p3tick");
+                var point42 = document.getElementById("1p4tick");
+
+                startPoint(2, point32.checked, point42.checked)
+
+                var point33 = document.getElementById("2p3tick");
+                var point43 = document.getElementById("2p4tick");
+
+                startPoint(3, point33.checked, point43.checked)
+
+                var point34 = document.getElementById("3p3tick");
+                var point44 = document.getElementById("3p4tick");
+
+                startPoint(4, point34.checked, point44.checked)
+
+                updateBuildPatten();
+
+
+                PlanPath();
+            }
+
+
+            if (containerTest) {
+                containerTest.querySelectorAll('input[type="number"]').forEach(input => {
+                    console.log('Attaching listener to input:', input);
+                    input.addEventListener('input', handleInputChange);
+                });
+
+                containerTest.querySelectorAll('input[type="checkbox"]').forEach(input => {
+                    console.log('Attaching listener to input:', input);
+                    input.addEventListener('input', updatePointsInput);
+                });
+            } else {
+                console.error('Container element not found.');
+            }
+
+        };
 
         var slider = document.getElementById("mySlider");
         var output = document.getElementById("sliderValue");
         var end = document.getElementById("end");
         var start = document.getElementById("start");
 
-        output.innerHTML = slider.value; // Display the default slider value
+        output.innerHTML = slider.value;
 
-        slider.oninput = function () {
-            output.innerHTML = this.value;
-            updateDisplay();
-            createPoints();
-        }
+        var paths = 0;
+        var points = [];
 
         var loopTime = [];
 
@@ -192,6 +453,229 @@
         var leftPod = [];
         var rightPod = [];
         var centerPod = [];
+
+        var createdPoints = [];
+        var createdPointsStatic = [];
+
+        var xpoints = [];
+        var ypoints = [];
+
+        function thridPoint1(point3, point4) {
+            var Point3 = document.getElementById(point3);
+            var Point4 = document.getElementById(point4);
+
+            Point3.addEventListener('change', function () {
+
+                if (Point3.checked) {
+                } else {
+                    Point4.checked = false;
+                }
+
+                updateBuildPatten();
+
+            });
+
+            Point4.addEventListener('change', function () {
+
+                if (Point4.checked) {
+                    Point3.checked = true;
+                } else {
+
+                }
+
+                updateBuildPatten();
+
+            });
+
+        }
+
+        function pathsChecked(path1, path2, path3, path4) {
+
+            var checkbox1 = document.getElementById(path1);
+            var checkbox2 = document.getElementById(path2);
+
+            var checkbox3 = document.getElementById(path3);
+            var checkbox4 = document.getElementById(path4);
+
+            checkbox1.addEventListener('change', function () {
+                if (checkbox1.checked) {
+
+                } else {
+                    checkbox2.checked = false;
+                    checkbox3.checked = false;
+                    checkbox4.checked = false;
+                }
+                updateBuildPatten();
+
+            });
+
+            checkbox2.addEventListener('change', function () {
+                if (checkbox2.checked) {
+                    checkbox1.checked = true;
+
+                    // var point32 = document.getElementById("1p3tick");
+                    // var point42 = document.getElementById("1p4tick");
+
+                    // startPoint(2, point32.checked, point42.checked)
+
+                } else {
+                    checkbox3.checked = false;
+                    checkbox4.checked = false;
+                }
+                updateBuildPatten();
+
+            });
+
+            checkbox3.addEventListener('change', function () {
+                if (checkbox3.checked) {
+                    checkbox1.checked = true;
+                    checkbox2.checked = true;
+
+                    // var point32 = document.getElementById("1p3tick");
+                    // var point42 = document.getElementById("1p4tick");
+
+                    // startPoint(2, point32.checked, point42.checked)
+
+                    // var point33 = document.getElementById("2p3tick");
+                    // var point43 = document.getElementById("2p4tick");
+
+                    // startPoint(3, point33.checked, point43.checked)
+
+                } else {
+                    checkbox4.checked = false;
+                }
+                updateBuildPatten();
+
+            });
+
+            checkbox4.addEventListener('change', function () {
+                if (checkbox4.checked) {
+                    checkbox1.checked = true;
+                    checkbox2.checked = true;
+                    checkbox3.checked = true;
+
+                    // var point32 = document.getElementById("1p3tick");
+                    // var point42 = document.getElementById("1p4tick");
+
+                    // startPoint(2, point32.checked, point42.checked)
+
+                    // var point33 = document.getElementById("2p3tick");
+                    // var point43 = document.getElementById("2p4tick");
+
+                    // startPoint(3, point33.checked, point43.checked)
+
+                    // var point34 = document.getElementById("3p3tick");
+                    // var point44 = document.getElementById("3p4tick");
+
+                    // startPoint(4, point34.checked, point44.checked)
+                } else {
+                }
+
+                updateBuildPatten();
+
+            });
+
+        }
+
+        function startPoint(startNumber, third, forth) {
+            var pointToInputX = document.getElementById(startNumber + "p1X");
+            var pointToInputY = document.getElementById(startNumber + "p1Y");
+
+            if (forth) {
+                var pointToGetX = document.getElementById(startNumber - 1 + "p4X").value;
+                var pointToGetY = document.getElementById(startNumber - 1 + "p4Y").value;
+
+                console.log("third point added")
+
+                pointToInputX.value = pointToGetX;
+                pointToInputY.value = pointToGetY;
+            } else if (third) {
+                var pointToGetX = document.getElementById(startNumber - 1 + "p3X").value;
+                var pointToGetY = document.getElementById(startNumber - 1 + "p3Y").value;
+
+                console.log("forth point added")
+
+                pointToInputX.value = pointToGetX;
+                pointToInputY.value = pointToGetY;
+            } else {
+                var pointToGetX = document.getElementById(startNumber - 1 + "p2X").value;
+                var pointToGetY = document.getElementById(startNumber - 1 + "p2Y").value;
+
+                console.log("third point added")
+
+                pointToInputX.value = pointToGetX;
+                pointToInputY.value = pointToGetY;
+            }
+
+        }
+
+        slider.oninput = function () {
+            output.innerHTML = this.value;
+            updateDisplay();
+            createPoints();
+            if (this.value === 0) {
+                var robotPosition = document.getElementById("robotPos");
+                robotPosition.style.display = "none";
+            }
+        }
+
+        function generateDivBox(id, label, containerId, isChecked = false, isDisabled = false) {
+
+            const container = document.getElementById(containerId);
+
+            const divBox = document.createElement('div');
+            divBox.className = 'pointBox';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = `${id}tick`;
+            checkbox.className = 'pointChecks';
+            checkbox.checked = isChecked;
+            checkbox.disabled = isDisabled;
+
+            const checkLabel = document.createElement('label');
+            checkLabel.htmlFor = `${id}tick`;
+            checkLabel.className = 'checkLabel';
+            checkLabel.innerText = `${label}:`;
+
+            const xLabel = document.createElement('label');
+            xLabel.htmlFor = `${id}X`;
+            xLabel.className = 'xLabel';
+            xLabel.innerText = 'X';
+
+            const xInput = document.createElement('input');
+            xInput.type = 'number';
+            xInput.min = 0;
+            xInput.max = 360;
+            xInput.id = `${id}X`;
+            xInput.className = 'valueLabel';
+
+            const yLabel = document.createElement('label');
+            yLabel.htmlFor = `${id}Y`;
+            yLabel.className = 'yLabel';
+            yLabel.innerText = 'Y';
+
+            const yInput = document.createElement('input');
+            yInput.type = 'number';
+            yInput.min = 0;
+            yInput.max = 360;
+            yInput.id = `${id}Y`;
+            yInput.className = 'valueLabel';
+
+            divBox.appendChild(checkbox);
+            divBox.appendChild(checkLabel);
+            divBox.appendChild(document.createElement('br'));
+
+            divBox.appendChild(xLabel);
+            divBox.appendChild(document.createElement('br'));
+            divBox.appendChild(xInput);
+
+            divBox.appendChild(yLabel);
+            divBox.appendChild(document.createElement('br'));
+            divBox.appendChild(yInput);
+
+            container.appendChild(divBox);
+        }
 
         function updateDisplay() {
             var LoopTime = document.getElementById("loopTimeDis");
@@ -240,14 +724,35 @@
                     parseFileContent(content);
                     slider.max = loopTime.length - 1;
                     end.innerHTML = loopTime.length - 1;
-                    alert("File content has been parsed and stored.");
                 };
                 reader.readAsText(file);
             }
         }
 
         function parseFileContent(content) {
-            // Split the content by lines
+
+            slider.value = 0;
+
+            if (xValues.length > 0) {
+                output.innerHTML = slider.value;
+                updateDisplay();
+                createPoints();
+            }
+
+            loopTime.length = 0;
+
+            xValues.length = 0;
+            yValues.length = 0;
+            headingValues.length = 0;
+
+            xVelo.length = 0;
+            yVelo.length = 0;
+            headingVelo.length = 0;
+
+            leftPod.length = 0;
+            rightPod.length = 0;
+            centerPod.length = 0;
+
             var lines = content.split('\n');
             for (var i = 0; i < lines.length; i++) {
 
@@ -288,7 +793,6 @@
             }
         }
 
-        // Example function to access parsed data
         function displayParsedData() {
             console.log("Numbers: ", loopTime);
             console.log("X Values: ", xValues);
@@ -298,46 +802,476 @@
             console.log("center: ", centerPod);
         }
 
-        var createdPoints = [];
-
-        var RobotPos = [];
-
         function createPoints() {
+
             deletePoints();
+
             var dropZone = document.getElementById("drop_zone");
 
             for (var i = 0; i < slider.value; i++) {
                 var point = document.createElement("div");
                 point.className = "point";
-                point.style.top = -((xValues[i] * 1.5)) + 586 + "px";
-                point.style.left = (yValues[i] * 1.5) + 51 + "px";
+                point.style.top = -((xValues[i] * 1.5)) + 590 + "px";
+                point.style.left = (yValues[i] * 1.5) + 50 + "px";
                 dropZone.appendChild(point);
 
                 createdPoints.push(point);
             }
+            var robotBorder = document.getElementById("robotBorder");
+            robotBorder.style.top = -((xValues[slider.value] * 1.5)) + 559 + "px";
+            robotBorder.style.left = (yValues[slider.value] * 1.5) + 20 + "px";
+            var heading = headingValues[slider.value];
+            robotBorder.style.transform = `rotate(${heading}deg)`;
+            robotBorder.style.display = "block";
 
-            var robotPosition = document.createElement("div");
 
-            robotPosition.className = "robotPos";
+            var robotPosition = document.getElementById("robotPos");
             robotPosition.style.top = -((xValues[slider.value] * 1.5)) + 586 + "px";
-            robotPosition.style.left = (yValues[slider.value] * 1.5) + 50 + "px";
-
-            dropZone.appendChild(robotPosition);
-
-            RobotPos.push(robotPosition);
-
+            robotPosition.style.left = (yValues[slider.value] * 1.5) + 48.5 + "px";
+            robotPosition.style.display = "block";
         }
 
         function deletePoints() {
             var dropZone = document.getElementById("drop_zone");
-            RobotPos.forEach(function (robotPosition) {
-                dropZone.removeChild(robotPosition);
-            });
             createdPoints.forEach(function (point) {
                 dropZone.removeChild(point);
             });
             createdPoints = [];
         }
+
+        function PlanPath() {
+
+            xpoints.length = 0;
+            ypoints.length = 0;
+
+            for (let i = 0; i < paths; i++) {
+
+                console.log(i);
+
+                if (points[i] == 2) {
+                    const startX = document.getElementById(i + 1 + 'p1X').value;
+                    const startY = document.getElementById(i + 1 + 'p1Y').value;
+
+                    const endX = document.getElementById(i + 1 + 'p2X').value;
+                    const endY = document.getElementById(i + 1 + 'p2Y').value;
+
+                    calculateLinearBezier(startX, startY, endX, endY);
+
+                } else if (points[i] == 3) {
+                    const startX = document.getElementById(i + 1 + 'p1X').value;
+                    const startY = document.getElementById(i + 1 + 'p1Y').value;
+
+                    const secondX = document.getElementById(i + 1 + 'p2X').value;
+                    const secondY = document.getElementById(i + 1 + 'p2Y').value;
+
+                    const endX = document.getElementById(i + 1 + 'p3X').value;
+                    const endY = document.getElementById(i + 1 + 'p3Y').value;
+
+                    calculateQuadraticBezier(startX, startY, secondX, secondY, endX, endY);
+
+                } else if (points[i] == 4) {
+                    const startX = document.getElementById(i + 1 + 'p1X').value;
+                    const startY = document.getElementById(i + 1 + 'p1Y').value;
+
+                    const secondX = document.getElementById(i + 1 + 'p2X').value;
+                    const secondY = document.getElementById(i + 1 + 'p2Y').value;
+
+                    const thirdX = document.getElementById(i + 1 + 'p3X').value;
+                    const thirdY = document.getElementById(i + 1 + 'p3Y').value;
+
+                    const endX = document.getElementById(i + 1 + 'p4X').value;
+                    const endY = document.getElementById(i + 1 + 'p4Y').value;
+
+                    calculateCubicBezier(startX, startY, secondX, secondY, thirdX, thirdY, endX, endY);
+
+                }
+
+            }
+
+            // console.log(xpoints);
+            // console.log(ypoints);
+            createPointsStatic();
+
+        }
+
+        function getFirstPathData() {
+
+            var allPoints;
+
+            var xText1 = '1p1X: ' + document.getElementById('1p1X').value;
+            var xText2 = '1p2X: ' + document.getElementById('1p2X').value;
+            var xText3 = '1p3X: ' + document.getElementById('1p3X').value;
+            var xText4 = '1p4X: ' + document.getElementById('1p4X').value;
+
+            var yText1 = '1p1Y: ' + document.getElementById('1p1Y').value;
+            var yText2 = '1p2Y: ' + document.getElementById('1p2Y').value;
+            var yText3 = '1p3Y: ' + document.getElementById('1p3Y').value;
+            var yText4 = '1p4Y: ' + document.getElementById('1p4Y').value;
+
+            allPoints = xText1 + '\n' + xText2 + '\n' + xText3 + '\n' + xText4 + '\n' + yText1 + '\n' + yText2 + '\n' + yText3 + '\n' + yText4;
+
+            return allPoints;
+        }
+
+        function getSecondPathData() {
+
+            var allPoints;
+
+            var xText1 = '2p1X: ' + document.getElementById('2p1X').value;
+            var xText2 = '2p2X: ' + document.getElementById('2p2X').value;
+            var xText3 = '2p3X: ' + document.getElementById('2p3X').value;
+            var xText4 = '2p4X: ' + document.getElementById('2p4X').value;
+
+            var yText1 = '2p1Y: ' + document.getElementById('2p1Y').value;
+            var yText2 = '2p2Y: ' + document.getElementById('2p2Y').value;
+            var yText3 = '2p3Y: ' + document.getElementById('2p3Y').value;
+            var yText4 = '2p4Y: ' + document.getElementById('2p4Y').value;
+
+            allPoints = xText1 + '\n' + xText2 + '\n' + xText3 + '\n' + xText4 + '\n' + yText1 + '\n' + yText2 + '\n' + yText3 + '\n' + yText4;
+
+            return allPoints;
+        }
+
+        function getThirdPathData() {
+
+            var allPoints;
+
+            var xText1 = '3p1X: ' + document.getElementById('3p1X').value;
+            var xText2 = '3p2X: ' + document.getElementById('3p2X').value;
+            var xText3 = '3p3X: ' + document.getElementById('3p3X').value;
+            var xText4 = '3p4X: ' + document.getElementById('3p4X').value;
+
+            var yText1 = '3p1Y: ' + document.getElementById('3p1Y').value;
+            var yText2 = '3p2Y: ' + document.getElementById('3p2Y').value;
+            var yText3 = '3p3Y: ' + document.getElementById('3p3Y').value;
+            var yText4 = '3p4Y: ' + document.getElementById('3p4Y').value;
+
+            allPoints = xText1 + '\n' + xText2 + '\n' + xText3 + '\n' + xText4 + '\n' + yText1 + '\n' + yText2 + '\n' + yText3 + '\n' + yText4;
+
+            return allPoints;
+        }
+
+        function getForthPathData() {
+
+            var allPoints;
+
+            var xText1 = '4p1X: ' + document.getElementById('4p1X').value;
+            var xText2 = '4p2X: ' + document.getElementById('4p2X').value;
+            var xText3 = '4p3X: ' + document.getElementById('4p3X').value;
+            var xText4 = '4p4X: ' + document.getElementById('4p4X').value;
+
+            var yText1 = '4p1Y:' + document.getElementById('4p1Y').value;
+            var yText2 = '4p2Y:' + document.getElementById('4p2Y').value;
+            var yText3 = '4p3Y:' + document.getElementById('4p3Y').value;
+            var yText4 = '4p4Y:' + document.getElementById('4p4Y').value;
+
+            allPoints = xText1 + '\n' + xText2 + '\n' + xText3 + '\n' + xText4 + '\n' + yText1 + '\n' + yText2 + '\n' + yText3 + '\n' + yText4;
+
+            return allPoints;
+        }
+
+        document.getElementById('downloadData').addEventListener('click', function () {
+
+            var path1Points = getFirstPathData();
+            var path2Points = getSecondPathData();
+            var path3Points = getThirdPathData();
+            var path4Points = getForthPathData();
+
+            var filename = prompt("Please enter the filename", "Pathing Points");
+
+            if (filename) {
+                var combinedText = path1Points + '\n' + path2Points + '\n' + path3Points + '\n' + path4Points;
+
+                var blob = new Blob([combinedText], { type: 'text/plain' });
+
+                var link = document.createElement('a');
+
+                link.download = filename;
+
+                link.href = window.URL.createObjectURL(blob);
+
+                document.body.appendChild(link);
+
+                link.click();
+
+                document.body.removeChild(link);
+            }
+
+        });
+
+        document.getElementById('openPathFromFile').addEventListener('click', function () {
+            document.getElementById('fileinput').click();
+        });
+
+        document.getElementById('fileinput').addEventListener('change', function (event) {
+            var file = event.target.files[0];
+
+            if (file) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    var content = e.target.result;
+                    inputPathingPoints(content);
+                };
+
+                reader.readAsText(file);
+            }
+        });
+
+        function inputPathingPoints(content) {
+
+            var lines = content.split('\n');
+
+            for (var i = 0; i < lines.length; i++) {
+
+                var line = lines[i].trim();
+                var parts = line.split(':');
+
+                if (parts.length === 2) {
+
+                    //first points
+                    if (parts[0].trim().startsWith('1p1X')) {
+                        document.getElementById('1p1X').value = parseFloat(parts[1])
+                    } else if (parts[0].trim().startsWith('1p2X')) {
+                        var Text = document.getElementById('1p2X');
+                        Text.value = parseFloat(parts[1])
+                    } else if (parts[0].trim().startsWith('1p3X')) {
+                        var Text = document.getElementById('1p3X');
+                        Text.value = parseFloat(parts[1])
+                    } else if (parts[0].trim().startsWith('1p4X')) {
+                        var Text = document.getElementById('1p4X');
+                        Text.value = parseFloat(parts[1])
+                    }
+
+                    if (parts[0].trim().startsWith('1p1Y')) {
+                        var Text = document.getElementById('1p1Y');
+                        Text.value = parseFloat(parts[1])
+                    } else if (parts[0].trim().startsWith('1p2Y')) {
+                        var Text = document.getElementById('1p2Y');
+                        Text.value = parseFloat(parts[1])
+                    } else if (parts[0].trim().startsWith('1p3Y')) {
+                        var Text = document.getElementById('1p3Y');
+                        Text.value = parseFloat(parts[1])
+                    } else if (parts[0].trim().startsWith('1p4Y')) {
+                        var Text = document.getElementById('1p4Y');
+                        Text.value = parseFloat(parts[1])
+                    }
+
+                    //second points
+                    if (parts[0].trim().startsWith('2p1X')) {
+                        var Text = document.getElementById('2p1X');
+                        Text.innerHTML = parseFloat(parts[1])
+                    } else if (parts[0].trim().startsWith('2p2X')) {
+                        var Text = document.getElementById('2p2X');
+                        Text.innerHTML = parseFloat(parts[1])
+                    } else if (parts[0].trim().startsWith('2p3X')) {
+                        var Text = document.getElementById('2p3X');
+                        Text.innerHTML = parseFloat(parts[1])
+                    } else if (parts[0].trim().startsWith('2p4X')) {
+                        var Text = document.getElementById('2p4X');
+                        Text.innerHTML = parseFloat(parts[1])
+                    }
+
+                    if (parts[0].trim().startsWith('2p1Y')) {
+                        var Text = document.getElementById('2p1Y');
+                        Text.innerHTML = parseFloat(parts[1])
+                    } else if (parts[0].trim().startsWith('2p2Y')) {
+                        var Text = document.getElementById('2p2Y');
+                        Text.innerHTML = parseFloat(parts[1])
+                    } else if (parts[0].trim().startsWith('2p3Y')) {
+                        var Text = document.getElementById('2p3Y');
+                        Text.innerHTML = parseFloat(parts[1])
+                    } else if (parts[0].trim().startsWith('2p4Y')) {
+                        var Text = document.getElementById('2p4Y');
+                        Text.innerHTML = parseFloat(parts[1])
+                    }
+
+                    //third points
+                    if (parts[0].trim().startsWith('3p1X')) {
+                        var Text = document.getElementById('3p1X');
+                        Text.innerHTML = parseFloat(parts[1])
+                    } else if (parts[0].trim().startsWith('3p2X')) {
+                        var Text = document.getElementById('3p2X');
+                        Text.innerHTML = parseFloat(parts[1])
+                    } else if (parts[0].trim().startsWith('3p3X')) {
+                        var Text = document.getElementById('3p3X');
+                        Text.innerHTML = parseFloat(parts[1])
+                    } else if (parts[0].trim().startsWith('3p4X')) {
+                        var Text = document.getElementById('3p4X');
+                        Text.innerHTML = parseFloat(parts[1])
+                    }
+
+                    if (parts[0].trim().startsWith('3p1Y')) {
+                        var Text = document.getElementById('3p1Y');
+                        Text.innerHTML = parseFloat(parts[1])
+                    } else if (parts[0].trim().startsWith('3p2Y')) {
+                        var Text = document.getElementById('3p2Y');
+                        Text.innerHTML = parseFloat(parts[1])
+                    } else if (parts[0].trim().startsWith('3p3Y')) {
+                        var Text = document.getElementById('3p3Y');
+                        Text.innerHTML = parseFloat(parts[1])
+                    } else if (parts[0].trim().startsWith('3p4Y')) {
+                        var Text = document.getElementById('3p4Y');
+                        Text.innerHTML = parseFloat(parts[1])
+                    }
+
+                    //forth points
+                    if (parts[0].trim().startsWith('4p1X')) {
+                        var Text = document.getElementById('4p1X');
+                        Text.innerHTML = parseFloat(parts[1])
+                    } else if (parts[0].trim().startsWith('4p2X')) {
+                        var Text = document.getElementById('4p2X');
+                        Text.innerHTML = parseFloat(parts[1])
+                    } else if (parts[0].trim().startsWith('4p3X')) {
+                        var Text = document.getElementById('4p3X');
+                        Text.innerHTML = parseFloat(parts[1])
+                    } else if (parts[0].trim().startsWith('4p4X')) {
+                        var Text = document.getElementById('4p4X');
+                        Text.innerHTML = parseFloat(parts[1])
+                    }
+
+                    if (parts[0].trim().startsWith('4p1Y')) {
+                        var Text = document.getElementById('4p1Y');
+                        Text.innerHTML = parseFloat(parts[1])
+                    } else if (parts[0].trim().startsWith('4p2Y')) {
+                        var Text = document.getElementById('4p2Y');
+                        Text.innerHTML = parseFloat(parts[1])
+                    } else if (parts[0].trim().startsWith('4p3Y')) {
+                        var Text = document.getElementById('4p3Y');
+                        Text.innerHTML = parseFloat(parts[1])
+                    } else if (parts[0].trim().startsWith('4p4Y')) {
+                        var Text = document.getElementById('4p4Y');
+                        Text.innerHTML = parseFloat(parts[1])
+                    }
+
+                }
+            }
+        }
+
+        function updateBuildPatten() {
+            points.length = 0;
+            paths = 0;
+
+            for (let i = 1; i < 5; i++) {
+
+                var pathCheck = document.getElementById('Path' + i)
+                console.log(pathCheck.checked + pathCheck.id)
+
+                if (pathCheck.checked === true) {
+                    paths++;
+                } else {
+                    i = 10;
+                }
+
+            }
+
+            for (let i = 1; i < paths + 1; i++) {
+
+                for (let j = 1; j < 5; j++) {
+
+                    var pathCheck = document.getElementById(i + 'p' + j + 'tick')
+
+                    console.log(pathCheck.checked + pathCheck.id)
+
+                    if (pathCheck.checked === true) {
+                    } else {
+                        points.push(j - 1)
+                        j = 10;
+                    }
+
+                    if (j === 4 && pathCheck.checked === true) {
+                        points.push(j)
+
+                    }
+                }
+            }
+
+            console.log(paths)
+            console.log(points)
+        }
+
+        function calculateCubicBezier(startX, startY, controlFirstX, controlFirstY, controlSecondX, controlSecondY, endX, endY) {
+
+            let t = 0;
+
+            while (t <= 1) {
+                const u = 1 - t;
+                const tt = t * t;
+                const ttt = t * t * t;
+                const uu = u * u;
+                const uuu = u * u * u;
+
+                xpoints.push(uuu * startX + 3 * uu * t * controlFirstX + 3 * u * tt * controlSecondX + ttt * endX);
+                ypoints.push(uuu * startY + 3 * uu * t * controlFirstY + 3 * u * tt * controlSecondY + ttt * endY);
+
+                t += 0.001;
+            }
+
+        }
+
+        function calculateQuadraticBezier(startX, startY, controlX, controlY, endX, endY) {
+
+            let t = 0;
+
+            while (t <= 1) {
+                const u = 1 - t;
+                const tt = t * t;
+                const uu = u * u;
+
+                const x = uu * startX + 2 * u * t * controlX + tt * endX;
+                const y = uu * startY + 2 * u * t * controlY + tt * endY;
+
+                xpoints.push(x);
+                ypoints.push(y);
+
+                t += 0.001;
+            }
+
+            return { xpoints, ypoints };
+        }
+
+        function calculateLinearBezier(startX, startY, endX, endY) {
+
+            let t = 0;
+
+            while (t <= 1) {
+                const x = (1 - t) * startX + t * endX;
+                const y = (1 - t) * startY + t * endY;
+
+                xpoints.push(x);
+                ypoints.push(y);
+
+                t += 0.001;
+            }
+
+        }
+
+        function createPointsStatic() {
+
+            deletePointsStatic();
+
+            var dropZone = document.getElementById("drop_zone");
+
+            for (var i = 0; i < xpoints.length; i++) {
+                var point = document.createElement("div");
+                point.className = "pointStatic";
+                point.style.top = -((xpoints[i] * 1.5)) + 590 + "px";
+                point.style.left = (ypoints[i] * 1.5) + 50 + "px";
+                dropZone.appendChild(point);
+
+                createdPointsStatic.push(point);
+            }
+
+        }
+
+        function deletePointsStatic() {
+            var dropZone = document.getElementById("drop_zone");
+            createdPointsStatic.forEach(function (pointStatic) {
+                dropZone.removeChild(pointStatic);
+            });
+            createdPointsStatic = [];
+        }
+
     </script>
 
 </body>
