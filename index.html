@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>pathing replay</title>
+    <title>Localization sim</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <link rel="icon" href="images/custom-centerstage-field-diagrams-works-with-meepmeep-v0-uqcy8o9sfpob1.png"
@@ -22,172 +22,64 @@
 
 <body>
 
-    <div id="drop_zone" style="height: 43vw; width: 43vw;">
+    <div style="display: flex;">
 
-        <h1 style="font-size: 1.4vw; text-align: center; margin-top: 1.4vw; padding-left: 3vw;">Field View</h1>
+        <div style="width: 40vw; height: 40vw;  margin-top: 5vw; margin-left: 5vw;">
+            <div id="drop_zone" style="height: 40vw; width: 40vw;">
+    
+                <img ondrop="dropHandler(event);" ondragover="dragOverHandler(event);"
+                    src="images/custom-centerstage-field-diagrams-works-with-meepmeep-v0-uqcy8o9sfpob1.png" id="backround"
+                    alt="">
+        
+                <div id="robotPos" class="draggable">
+        
+                </div>
 
-        <img ondrop="dropHandler(event);" ondragover="dragOverHandler(event);"
-            src="images/custom-centerstage-field-diagrams-works-with-meepmeep-v0-uqcy8o9sfpob1.png" id="backround"
-            alt="">
+                <div id="calculatedPosition">
+        
+                </div>
+        
+            </div>
+        </div>
+    
+        <div style="width: 40vw; padding-top: 5vw; padding-left: 4vw;">
+            <h1>Sensor values</h1>
+    
+            <div class="sensorBox">
+                <h1 style="padding-right: 5vw; padding-left: 1vw;">Right Pod</h1>
+                <h1 id="sensor1"></h1>
+            </div>
+            <div class="sensorBox">
+                <h1 style="padding-right: 5vw; padding-left: 1vw;">Left Pod</h1>
+                <h1 id="sensor2"></h1>
+            </div>
+            <div class="sensorBox">
+                <h1 style="padding-right: 5vw; padding-left: 1vw;">Back Pod</h1>
+                <h1 id="sensor3"></h1>
+            </div>
 
-        <div id="robotPos"></div>
+            <div class="sensorBox">
+                <h1 style="padding-right: 5vw; padding-left: 1vw;">X</h1>
+                <h1 id="X"></h1>
+            </div>
 
-        <div id="robotBorder"></div>
+            <div class="sensorBox">
+                <h1 style="padding-right: 5vw; padding-left: 1vw;">Y</h1>
+                <h1 id="Y"></h1>
+            </div>
 
+            <input onchange="updateHeadingSlider()" type="range" min="0" max="360" value="0" class="slider" style="width: 35vw;" id="mySlider">
+            <input onchange="updateHeadingFromText()" id="sliderValue" value="0" style="position: absolute; top: 38vw; left: 72.5vw; margin-top: 0.7vw;" type="text">
+    
+
+            <button onclick="testLoc()" style="width: 10vw; height: 2vw; margin-top: 1vw; font-weight: 600;">Test</button>
+
+            <div class="sensorBox" style="margin-top: 1vw;">
+                <h1 style="padding-right: 5vw; padding-left: 1vw;">Global Error</h1>
+                <h1 id="GlobalError"></h1>
+            </div>
+        </div>
     </div>
-
-    <input type="range" min="0" max="0" value="0" class="slider" id="mySlider">
-    <div id="sliderValue" style="position: absolute; top: 46.5vw; left: 22vw;">50</div>
-    <div id="start" style="position: absolute; top: 44.65vw; left: 6vw;">0</div>
-    <div id="end" style="position: absolute; top: 44.65vw; left: 39vw;">100</div>
-
-    <div
-        style="position: absolute; top: 3.6vw; left: 43.6vw; height: 39.5vw; width: 14.5vw; background-color: rgb(83, 92, 94); border-style: solid; border-radius: 0.5vw; border-width: 0.25vw; color: black;">
-
-        <div id="globalPosition" class="groupBox">
-            <h1 style="font-size: 1.4vw; margin: 0.5vw;">Global Odometry Position</h1>
-            <div class="borderBox">
-                <h2 class="labelDisplay">
-                    X:
-                </h2>
-                <h2 id="XPosition" class="valuesDisplay">
-                    0
-                </h2>
-            </div>
-            <div class="borderBox">
-                <h2 class="labelDisplay">
-                    Y:
-                </h2>
-                <h2 id="YPosition" class="valuesDisplay">
-                    0
-                </h2>
-            </div>
-            <div class="borderBox">
-                <h2 class="labelDisplay">
-                    Heading:
-                </h2>
-                <h2 id="Heading" class="valuesDisplay">
-                    0
-                </h2>
-            </div>
-        </div>
-
-        <div id="globalPosition" class="groupBox">
-            <h1 style="font-size: 1.3vw; margin: 0.5vw;">Odometry Pod Readings</h1>
-            <div class="borderBox">
-                <h2 class="labelDisplay">
-                    Left Pod:
-                </h2>
-                <h2 id="LeftPod" class="valuesDisplay">
-                    0
-                </h2>
-            </div>
-            <div class="borderBox">
-                <h2 class="labelDisplay">
-                    Right Pod:
-                </h2>
-                <h2 id="RightPod" class="valuesDisplay">
-                    0
-                </h2>
-            </div>
-            <div class="borderBox">
-                <h2 class="labelDisplay">
-                    Center Pod:
-                </h2>
-                <h2 id="CenterPod" class="valuesDisplay">
-                    0
-                </h2>
-            </div>
-        </div>
-
-        <div id="globalPosition" class="groupBox">
-            <h1 style="font-size: 1.3vw; margin: 0.5vw;">Global Robot Velocity</h1>
-            <div class="borderBox">
-                <h2 class="labelDisplay">
-                    X Velocity:
-                </h2>
-                <h2 id="XVelo" class="valuesDisplay">
-                    0
-                </h2>
-            </div>
-            <div class="borderBox">
-                <h2 class="labelDisplay">
-                    Y Velocity:
-                </h2>
-                <h2 id="YVelo" class="valuesDisplay">
-                    0
-                </h2>
-            </div>
-            <div class="borderBox">
-                <h2 class="labelDisplay">
-                    H Velocity:
-                </h2>
-                <h2 id="HeadingVelo" class="valuesDisplay">
-                    0
-                </h2>
-            </div>
-        </div>
-
-        <div class="groupBox" style="margin-top: 1.5vw;">
-            <div class="borderBox">
-                <h2 class="labelDisplay">
-                    loop time:
-                </h2>
-                <h2 id="loopTimeDis" class="valuesDisplay">
-                    0
-                </h2>
-            </div>
-        </div>
-
-    </div>
-
-    <div id="pointsStorage"
-        style="position: absolute; top: 3.6vw; left: 59.5vw; height: 28.5vw; width: 37vw; background-color: rgb(83, 92, 94); color: black; border-radius: 0.7vw; border-style: solid;">
-
-        <h1
-            style="font-size: 2vw; font-family: Arial, Helvetica, sans-serif; text-align: center; font-weight: 600; margin: 0; padding-top: 0.4vw;">
-            Path Planning</h1>
-
-        <div style="width: 17vw; height: 22vw; position: absolute; top:3vw; left: 1.5vw;">
-            <div id="firstPath" class="pointBoxes">
-                <div class="pathHeadingsBox">
-                    <input type="checkbox" id="Path1" class="bigCheck">
-                    <label class="pathHeadings" for="Path1">Path 1</label>
-                </div>
-            </div>
-
-            <div id="secondPath" class="pointBoxes">
-                <div class="pathHeadingsBox">
-                    <input type="checkbox" id="Path2" class="bigCheck">
-                    <label class="pathHeadings" for="Path2">Path 2</label>
-                </div>
-            </div>
-        </div>
-
-        <div style="width: 17vw; float: inline-end; height: 22vw; position: absolute; top: 3vw; left: 18.5vw;">
-            <div id="thirdPath" class="pointBoxes">
-                <div class="pathHeadingsBox">
-                    <input type="checkbox" id="Path3" class="bigCheck">
-                    <label class="pathHeadings" for="Path3">Path 3</label>
-                </div>
-            </div>
-
-            <div id="forthPath" class="pointBoxes">
-                <div class="pathHeadingsBox">
-                    <input type="checkbox" id="Path4" class="bigCheck">
-                    <label class="pathHeadings" for="Path4">Path 4</label>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <button onclick="PlanPath()" id="displayPath">Build Path Data</button>
-    <button id="downloadData">Download Path Data</button>
-    <button id="openPathFromFile">Open Path Data</button>
-    <button id="autoReplay" onclick="autoReplay()">Auto Replay Data</button>
-    <input type="file" id="fileinput" accept=".txt" style="display: none;">
-    <pre id="pathingContent" style="white-space: pre-wrap;"></pre>
 
     <script src="funtions.js"></script>
 
